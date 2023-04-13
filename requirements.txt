@@ -1,0 +1,12 @@
+deepspeed
+ftfy>=6.0.1
+huggingface_hub>=0.11.0
+lm_eval>=0.3.0
+numpy>=1.22.0
+pybind11>=2.6.2
+regex
+sentencepiece
+six
+tiktoken>=0.1.2
+tokenizers>=0.12.1
+transformers>=4.24.0
