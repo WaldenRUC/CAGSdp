@@ -1,4 +1,4 @@
-source /home/zhaoheng_huang/anaconda3/bin/activte /home/zhaoheng_huang/anaconda3/envs/cags
+source /home/zhaoheng_huang/anaconda3/bin/activate /home/zhaoheng_huang/anaconda3/envs/cagsdp
 CODE=/home/zhaoheng_huang/CAGSdp
 DATA=/home/zhaoheng_huang/CAGS_data
 RES=/home/zhaoheng_huang/CAGS_result
@@ -13,14 +13,19 @@ mkdir -p ${saveDir}                 # 创建这个目录
 # 以上不需修改
 
 
-
 deepspeed --include localhost:0,1 runBert.py \
-  --output_dir ./output/aol/ \
+  --model_name_or_path ${RES}/BERT/BERTModel \
+  --tokenizer_name ${RES}/BERT/BERTModel \
+  --data_path ${DATA}/Rank/data/aol \
+  --task aol \
+  --load_plm ${RES}/SCL/CLModel/BertContrastive.aol \
+  --load_model ${RES}/Ranking/ROUTE/PointBertSessionSearch.aol \
+  --output_dir ${RES}/Rank \
   --optim adamw_torch \
   --learning_rate 5e-5 \
   --num_train_epochs 3 \
-  --per_device_train_batch_size 128 \
-  --per_device_eval_batch_size 128 \
+  --per_device_train_batch_size 2048 \
+  --per_device_eval_batch_size 2048 \
   --evaluation_strategy steps \
   --logging_steps 100 \
   --log_level warning \
