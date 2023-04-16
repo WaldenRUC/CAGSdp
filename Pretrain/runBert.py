@@ -6,7 +6,7 @@ from BertContrasPretrain import BertContrastive, BertContrastiveNeg
 from transformers import BertTokenizer, BertModel
 from transformers import get_linear_schedule_with_warmup as warmup
 from utilities import *
-from Test.file_dataset import ContrasDataset
+from file_dataset import ContrasDataset
 from tqdm import tqdm
 import torch.nn.functional as F
 parser = argparse.ArgumentParser()

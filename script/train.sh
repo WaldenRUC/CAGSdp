@@ -13,7 +13,7 @@ mkdir -p ${saveDir}                 # 创建这个目录
 # 以上不需修改
 
 
-deepspeed --include localhost:0,1 runBert.py \
+deepspeed --include localhost:0,1 ./Train/runBert.py \
   --model_name_or_path ${RES}/BERT/BERTModel \
   --tokenizer_name ${RES}/BERT/BERTModel \
   --data_path ${DATA}/Rank/data/aol \
@@ -36,7 +36,7 @@ deepspeed --include localhost:0,1 runBert.py \
   --eval_steps 100 \
   --save_steps 100 \
   --fp16 True \
-  --deepspeed dp.json
+  --deepspeed dp.json 
 
 python -u ${CODE}/Notify/notify_fs.py \
-  --text "${host}训练完毕【$hint】"
+  --text "${host}训练完毕【${hint}】"

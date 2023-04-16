@@ -1,15 +1,10 @@
-import random
+import random, torch, transformers, os, pytrec_eval
 import numpy as np
-import torch
-import transformers
-from Train.BertSessionSearch import BertSessionSearch
+from BertSessionSearch import BertSessionSearch
 from dataclasses import dataclass, field
 from typing import Optional
 from transformers import BertTokenizer, BertModel, Trainer, BertConfig, TrainingArguments
-from file_dataset2 import FileDataset
-import os
-import pytrec_eval
-
+from file_dataset import FileDataset
 
 @dataclass
 class ModelArguments:
@@ -118,42 +113,8 @@ def train_model(model_args, data_args, training_args):
     trainer.train()
     trainer.evaluate()
 
-def test_model(model_args, data_args, training_args):
-    config = BertConfig.from_pretrained(model_args.model_name_or_path)
-    bert_model = BertModel.from_pretrained(model_args.model_name_or_path)
-    tokenizer = BertTokenizer.from_pretrained(model_args.tokenizer_name)
-    model = BertSessionSearch(bert_model, config)
-
-    if data_args.task == "aol":
-        test_data = data_args.data_path + "/test/test_line.txt"
-        additional_tokens = 3
-        tokenizer.add_tokens("[eos]")
-        tokenizer.add_tokens("[term_del]")
-        tokenizer.add_tokens("[sent_del]")
-    elif data_args.task == "tiangong":
-        test_data = "./data/tiangong/test.point.lastq.txt"
-        additional_tokens = 2
-        tokenizer.add_tokens("[eos]")
-        tokenizer.add_tokens("[empty_d]")
-    else:
-        assert False
-
-    model.bert_model.resize_token_embeddings(model.bert_model.config.vocab_size + additional_tokens)
-    model_state_dict = torch.load(model_args.load_model)
-    model.load_state_dict({k.replace('module.', ''):v for k, v in model_state_dict.items()})
-    test_dataset = FileDataset(test_data, 128, tokenizer)
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        eval_dataset=test_dataset,
-        compute_metrics=compute_metrics
-    )
-    outputs = trainer.evaluate()
-    print(outputs)
-
 if __name__ == '__main__':
     set_seed()
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-    #train_model(model_args, data_args, training_args)
-    test_model(model_args, data_args, training_args)
+    train_model(model_args, data_args, training_args)

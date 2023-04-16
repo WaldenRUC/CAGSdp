@@ -1,15 +1,10 @@
-import random
+import random, os, pytrec_eval, torch, transformers
 import numpy as np
-import torch
-import transformers
 from BertSessionSearch import BertSessionSearch
 from dataclasses import dataclass, field
 from typing import Optional
 from transformers import BertTokenizer, BertModel, Trainer, BertConfig, TrainingArguments
 from file_dataset import FileDataset
-import os
-import pytrec_eval
-
 
 @dataclass
 class ModelArguments:
