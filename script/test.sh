@@ -12,8 +12,8 @@ saveDir=${RES}/Rank/${curTime}   # 模型日志保存的目录
 mkdir -p ${saveDir}                 # 创建这个目录
 # 以上不需修改
 
-
-deepspeed --include localhost:0,1 runBert.py \
+# test的时候不加入dp
+deepspeed --include localhost:0,1 ./Test/runBert.py \
   --model_name_or_path ${RES}/BERT/BERTModel \
   --tokenizer_name ${RES}/BERT/BERTModel \
   --data_path ${DATA}/Rank/data/aol \
@@ -27,7 +27,7 @@ deepspeed --include localhost:0,1 runBert.py \
   --per_device_train_batch_size 2048 \
   --per_device_eval_batch_size 2048 \
   --evaluation_strategy steps \
-  --logging_steps 100 \
+  --logging_steps 10 \
   --log_level warning \
   --load_best_model_at_end True \
   --metric_for_best_model map \
@@ -35,5 +35,7 @@ deepspeed --include localhost:0,1 runBert.py \
   --save_total_limit 1 \
   --eval_steps 100 \
   --save_steps 100 \
-  --fp16 True \
-  --deepspeed dp.json
+  --fp16 True
+
+python -u ${CODE}/Notify/notify_fs.py \
+    --text "${host}训练完毕【$hint】"

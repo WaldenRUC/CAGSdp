@@ -3,6 +3,22 @@ import linecache
 from torch.utils.data import Dataset
 import numpy as np
 import random
+class FileDatasetContras(Dataset):
+    def __init__(self, filename, max_seq_length, tokenizer):
+        super(FileDatasetContras, self).__init__()
+        self._filename = filename
+        self._max_seq_length = max_seq_length
+        self._tokenizer = tokenizer
+        with open(filename, "r") as f:
+            self._total_data = len(f.readlines())
+    def check_length(self, pairlist):
+        assert len(pairlist) % 2 == 0
+        # TODO
+    def __getitem__(self, idx):
+        pass
+        # TODO
+    def __len__(self):
+        return self._total_data
 
 class FileDataset(Dataset):
     def __init__(self, filename, max_seq_length, tokenizer):

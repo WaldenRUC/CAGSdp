@@ -13,3 +13,4 @@ transformers>=4.24.0
 matplotlib
 pytrec_eval
 accelerate
+setproctitle
