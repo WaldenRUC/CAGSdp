@@ -75,7 +75,7 @@ class FileDatasetList(Dataset):
             "input_ids": np.asarray(input_ids_list),
             "token_type_ids": np.asarray(segment_ids_list),
             "attention_mask": np.asarray(attention_mask_list),
-            "label": np.asarray([0.0])  # 第一个是点击的序列
+            "label": torch.LongTensor([0]) # 第一个是点击的序列
         }
         return batch
     def __len__(self):

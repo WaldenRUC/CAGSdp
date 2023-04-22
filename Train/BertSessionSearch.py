@@ -32,9 +32,10 @@ class BertSessionSearchList(nn.Module):
         bert_inputs = {'input_ids': input_ids.view(bsz*ce_width, -1), 'attention_mask': attention_mask.view(bsz*ce_width, -1), 'token_type_ids': token_type_ids.view(bsz*ce_width, -1)}
         bert_outputs = self.bert_model(**bert_inputs)
         sent_rep = self.dropout(bert_outputs[1]).view(bsz, ce_width, -1)    # [bsz*ce_width, 768] -> [bsz, ce_width, 768]
-        logits = self.classifier(sent_rep)      # [bsz, ce_width] ?
-        loss = self.ce_loss(logits, labels)   
-
+        logits = self.classifier(sent_rep)      # [bsz, ce_width, 1]
+        logits = torch.squeeze(logits)         
+        loss = self.ce_loss(logits, labels).mean()
+        
         return SequenceClassifierOutput(
             loss=loss,
             logits=logits,
