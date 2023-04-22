@@ -1,10 +1,10 @@
 import random, torch, transformers, os, pytrec_eval
 import numpy as np
-from BertSessionSearch import BertSessionSearch
+from BertSessionSearch import BertSessionSearch, BertSessionSearchList
 from dataclasses import dataclass, field
 from typing import Optional
 from transformers import BertTokenizer, BertModel, Trainer, BertConfig, TrainingArguments
-from file_dataset import FileDataset
+from file_dataset import FileDataset, FileDatasetList
 
 @dataclass
 class ModelArguments:
@@ -73,7 +73,7 @@ def set_seed(seed=0):
 def train_model(model_args, data_args, training_args):
     tokenizer = BertTokenizer.from_pretrained(model_args.tokenizer_name)
     if data_args.task == "aol":
-        train_data = data_args.data_path + "/train/train_line.txt"
+        train_data = data_args.data_path + "/train/train_list.txt"
         test_data = data_args.data_path + "/test/test_line.middle.txt"
         predict_data = data_args.data_path + "/test/test_line.txt"
         additional_tokens = 3
@@ -97,11 +97,11 @@ def train_model(model_args, data_args, training_args):
     bert_model.resize_token_embeddings(bert_model.config.vocab_size + additional_tokens)
     model_state_dict = torch.load(model_args.load_plm)
     bert_model.load_state_dict({k.replace('bert_model.', ''):v for k, v in model_state_dict.items()}, strict=False)
-    model = BertSessionSearch(bert_model, config)
+    model = BertSessionSearchList(bert_model, config)
     model.bert_model.gradient_checkpointing_enable()
 
-    train_dataset = FileDataset(train_data, 128, tokenizer)
-    test_dataset = FileDataset(test_data, 128, tokenizer)
+    train_dataset = FileDatasetList(train_data, 128, tokenizer)
+    test_dataset = FileDatasetList(test_data, 128, tokenizer)
 
     trainer = Trainer(
         model=model,

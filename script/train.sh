@@ -24,8 +24,8 @@ deepspeed --include localhost:0,1 ./Train/runBert.py \
   --optim adamw_torch \
   --learning_rate 5e-5 \
   --num_train_epochs 3 \
-  --per_device_train_batch_size 2048 \
-  --per_device_eval_batch_size 2048 \
+  --per_device_train_batch_size 128 \
+  --per_device_eval_batch_size 128 \
   --evaluation_strategy steps \
   --logging_steps 100 \
   --log_level warning \
