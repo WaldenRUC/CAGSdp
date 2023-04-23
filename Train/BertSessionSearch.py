@@ -28,20 +28,34 @@ class BertSessionSearchList(nn.Module):
             token_type_ids ([bsz, 5, seq_len]): [description]
             labels ([bsz])
         """
-        bsz, ce_width, seq_len = input_ids.shape
-        bert_inputs = {'input_ids': input_ids.view(bsz*ce_width, -1), 'attention_mask': attention_mask.view(bsz*ce_width, -1), 'token_type_ids': token_type_ids.view(bsz*ce_width, -1)}
-        bert_outputs = self.bert_model(**bert_inputs)
-        sent_rep = self.dropout(bert_outputs[1]).view(bsz, ce_width, -1)    # [bsz*ce_width, 768] -> [bsz, ce_width, 768]
-        logits = self.classifier(sent_rep)      # [bsz, ce_width, 1]
-        logits = torch.squeeze(logits)         
-        loss = self.ce_loss(logits, labels).mean()
-        
-        return SequenceClassifierOutput(
+        if len(input_ids.shape) == 3:
+            bsz, ce_width, seq_len = input_ids.shape
+            bert_inputs = {'input_ids': input_ids.view(bsz*ce_width, -1), 'attention_mask': attention_mask.view(bsz*ce_width, -1), 'token_type_ids': token_type_ids.view(bsz*ce_width, -1)}
+            bert_outputs = self.bert_model(**bert_inputs)
+            sent_rep = self.dropout(bert_outputs[1]).view(bsz, ce_width, -1)    # [bsz*ce_width, 768] -> [bsz, ce_width, 768]
+            logits = self.classifier(sent_rep)      # [bsz, ce_width, 1]
+            logits = torch.squeeze(logits)         
+            loss = self.ce_loss(logits, labels).mean()
+            
+            return SequenceClassifierOutput(
+                loss=loss,
+                logits=logits,
+                hidden_states=bert_outputs.hidden_states,
+                attentions=bert_outputs.attentions,
+            )
+        else:
+            bert_inputs = {'input_ids': input_ids, 'attention_mask': attention_mask, 'token_type_ids': token_type_ids}
+            bert_outputs = self.bert_model(**bert_inputs)
+            sent_rep = self.dropout(bert_outputs[1])
+            logits = self.classifier(sent_rep)
+            loss = self.bce_loss(logits, labels)
+
+            return SequenceClassifierOutput(
             loss=loss,
             logits=logits,
             hidden_states=bert_outputs.hidden_states,
             attentions=bert_outputs.attentions,
-        )
+            )
 
 
 class BertSessionSearch(nn.Module):
@@ -58,9 +72,9 @@ class BertSessionSearch(nn.Module):
     def forward(self, input_ids, attention_mask, token_type_ids, labels):
         """
         Args:
-            input_ids ([bsz, 5, seq_len]): [description]
-            attention_mask ([bsz, 5, seq_len]): [description]
-            token_type_ids ([bsz, 5, seq_len]): [description]
+            input_ids ([bsz, seq_len]): [description]
+            attention_mask ([bsz, seq_len]): [description]
+            token_type_ids ([bsz, seq_len]): [description]
         """
         bert_inputs = {'input_ids': input_ids, 'attention_mask': attention_mask, 'token_type_ids': token_type_ids}
         bert_outputs = self.bert_model(**bert_inputs)

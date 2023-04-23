@@ -101,7 +101,7 @@ def train_model(model_args, data_args, training_args):
     model.bert_model.gradient_checkpointing_enable()
 
     train_dataset = FileDatasetList(train_data, 128, tokenizer)
-    test_dataset = FileDatasetList(test_data, 128, tokenizer)
+    test_dataset = FileDataset(test_data, 128, tokenizer)
 
     trainer = Trainer(
         model=model,
