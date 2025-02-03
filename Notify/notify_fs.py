@@ -8,7 +8,6 @@ def notify(msg: str):
     curr_time = datetime.datetime.now()
     time_str = datetime.datetime.strftime(curr_time,'%Y-%m-%d %H:%M:%S')
     url="https://open.feishu.cn/open-apis/bot/v2/hook/dec37940-e22a-459f-9dd8-1be648b859a5"
-    #secret = "vt81f7EvBLrhStkuGCvxUg"
     send_post = {
         "msg_type": "text",
         "content":{

@@ -2,10 +2,10 @@ import requests, time, datetime, hmac, hashlib, base64, urllib.parse, os, argpar
 from pprint import pprint
 curr_time = datetime.datetime.now()
 time_str = datetime.datetime.strftime(curr_time,'%Y-%m-%d %H:%M:%S')
-url="https://oapi.dingtalk.com/robot/send?access_token=ec031748442e3298ad82b25476438dcafe460255f28a92ab22c380e7de620d41&timestamp=%s&sign=%s"
+url="https://oapi.dingtalk.com/robot/send?access_token=xxx&timestamp=%s&sign=%s"
 def get_sign():
     timestamp = str(round(time.time() * 1000))
-    secret = 'SEC429127893778a2f7ae256b8bbe0a1a7803a740d212aea103a96d6363547591d7' # 加签时候生成的秘钥
+    secret = 'xxx' # 加签时候生成的秘钥
     secret_enc = secret.encode('utf-8')
     string_to_sign = '{}\n{}'.format(timestamp, secret)
     string_to_sign_enc = string_to_sign.encode('utf-8')
